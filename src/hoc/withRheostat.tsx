@@ -26,7 +26,7 @@ type RheostatTypes = {
   onChange?: () => void;
   onSliderDragEnd?: () => void;
   onSliderDragMove?: () => void;
-  onSliderDragStart?: () => void;
+  onSliderDragStart?: (index: number) => void;
   onValuesUpdated?: (state:HandlersState) => void,
   orientation?: 'horizontal'| 'vertical';
   algorithm?: {
@@ -81,7 +81,7 @@ const withRheostat = (ChartCompo: any = null) => React.memo((props: RheostatType
   const handlePercentage = orientation === VERTICAL
     ? ((handleDimensions.width / containerSize.height) * PERCENT_FULL) / 2
     : ((handleDimensions.width / containerSize.width) * PERCENT_FULL) / 2;
-  const customPanResponder = (idx: number, start: () => void,
+  const customPanResponder = (idx: number, start: (idx: number) => void,
     move: (idx: number, gestureState: PanResponderGestureState) => void,
     end: () => void) => PanResponder.create({
     // Ask to be the responder:
@@ -89,7 +89,7 @@ const withRheostat = (ChartCompo: any = null) => React.memo((props: RheostatType
     onStartShouldSetPanResponderCapture: () => true,
     onMoveShouldSetPanResponder: () => false,
     onMoveShouldSetPanResponderCapture: () => true,
-    onPanResponderGrant: () => start(),
+    onPanResponderGrant: () => start(idx),
     onPanResponderMove: (_evt, gestureState) => move(idx, gestureState),
     onPanResponderTerminationRequest: () => false,
     onPanResponderRelease: () => end(),
@@ -121,13 +121,12 @@ const withRheostat = (ChartCompo: any = null) => React.memo((props: RheostatType
     const snapValue = getClosestSnapPoint(value, idx);
     return algorithm.getPosition(snapValue, min, max);
   };
-  const startSlide = () => {
-    const {
-      onSliderDragStart,
-    } = props;
-      onSliderDragStart && onSliderDragStart(); //eslint-disable-line
+  const startSlide = (idx: number) => {
+    const { onSliderDragStart } = props;
+    onSliderDragStart && onSliderDragStart(idx);
     previousHandlePos = handlePos.map((value) => (value as any).__getValue());
   };
+
   const validatePosition = (idx: number, proposedPosition: number) => {
     return Math.max(
       Math.min(
@@ -308,7 +307,7 @@ const Style = StyleSheet.create({
   },
   rheostatBackground: {
     // backgroundColor: '#fcfcfc',
-    borderColor: '#d8d8d8',
+    borderColor: '#CCC3C4',
     borderBottomWidth: 1,
     borderTopWidth: 1,
     position: 'relative',
