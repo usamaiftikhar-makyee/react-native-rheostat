@@ -24,7 +24,7 @@ type RheostatTypes = {
   min: number;
   onPress?: () => void;
   onChange?: () => void;
-  onSliderDragEnd?: () => void;
+  onSliderDragEnd?: (state: HandlersState) => void;
   onSliderDragMove?: () => void;
   onSliderDragStart?: (index: number) => void;
   onValuesUpdated?: (state:HandlersState) => void,
@@ -168,7 +168,9 @@ const withRheostat = (ChartCompo: any = null) => React.memo((props: RheostatType
   };
   const endSlide = () => {
     const { onSliderDragEnd } = props;
-    if (onSliderDragEnd) onSliderDragEnd();
+    if (onSliderDragEnd) {
+      onSliderDragEnd(getPublicState());
+    }
   };
   const panResponders = useMemo(() => handlePos.map(
     (_val, idx) => customPanResponder(idx, startSlide, moveSlide, endSlide),
